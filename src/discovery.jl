@@ -4,7 +4,7 @@ function discovery_multicast()
     tags = [
         SpeedwireTag0(0xffffffff),
         SpeedwireTagDiscovery(),
-        SpeedwireTagFinal()
+        SpeedwireTagFinal(),
     ]
     return SpeedwirePacket(tags)
 end

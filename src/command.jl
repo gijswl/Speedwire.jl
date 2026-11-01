@@ -25,7 +25,7 @@ end
 
 function condense(command::InverterCommand)
     data_tag = TagData2(
-        0x6065, 
+        0x6065,
         0xa0,
         command.destination,
         command.source,
@@ -41,7 +41,7 @@ function condense(command::InverterCommand)
     tags = [
         Tag0(0x00000001),
         data_tag,
-        TagFinal()
+        TagFinal(),
     ]
     return condense(Packet(tags))
 end
@@ -81,18 +81,17 @@ function query(socket::UDPSocket, host, command::InverterCommand)
     response = nothing
     while true
         rcv = timed_receive(socket, 5.0)
-        if(isnothing(rcv))
+        if (isnothing(rcv))
             error("Request timed out.")
         end
 
         response = InverterResponse(rcv[2])
-        if(response.packet_id & 0x7fff == command.packet_id)
+        if (response.packet_id & 0x7fff == command.packet_id)
             break
         else
             println("Received unexpected packet id $(rpacket.packet_id & 0x7fff)")
         end
     end
-    
+
     return response
 end
-

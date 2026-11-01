@@ -83,7 +83,7 @@ tag_id(::TagFinal) = ID_TAG_FINAL
 tag_data(::TagFinal) = UInt8[]
 
 
-struct RawTag <: Tag 
+struct RawTag <: Tag
     tag_id::UInt16
     data::Array{UInt8}
 end
@@ -154,16 +154,16 @@ function parse_tag(io::IOBuffer)
     data_length = ntoh(read(io, UInt16))
     tag_id = ntoh(read(io, UInt16))
 
-    if(tag_id == ID_TAG_FINAL)
+    if (tag_id == ID_TAG_FINAL)
         return TagFinal()
-    elseif(tag_id == ID_TAG_DATA2)
+    elseif (tag_id == ID_TAG_DATA2)
         return parse_tag(TagData2, io)
-    elseif(tag_id == ID_TAG_DISCOVERY)
+    elseif (tag_id == ID_TAG_DISCOVERY)
         return TagDiscovery()
-    elseif(tag_id == ID_TAG_IP)
+    elseif (tag_id == ID_TAG_IP)
         ip = IPv4(ntoh(read(io, UInt32)))
         return TagIP(ip)
-    elseif(tag_id == ID_TAG0)
+    elseif (tag_id == ID_TAG0)
         group = ntoh(read(io, UInt32))
         return Tag0(group)
     else

@@ -1,14 +1,14 @@
 const DATA_UNSIGNED32 = 0x00  # 0b0000 0000
-const DATA_STATUS32   = 0x08  # 0b0000 1000
-const DATA_STRING32   = 0x10  # 0b0001 0000
-const DATA_FLOAT      = 0x20  # 0b0010 0000
-const DATA_SIGNED32   = 0x40  # 0b0100 0000
+const DATA_STATUS32 = 0x08  # 0b0000 1000
+const DATA_STRING32 = 0x10  # 0b0001 0000
+const DATA_FLOAT = 0x20  # 0b0010 0000
+const DATA_SIGNED32 = 0x40  # 0b0100 0000
 
 const NAN_UNSIGNED32 = 0xffffffff
-const NAN_STATUS32   = 0x00fffffd
-const NAN_SIGNED32   = -2147483648 # 0x80000000
+const NAN_STATUS32 = 0x00fffffd
+const NAN_SIGNED32 = -2147483648 # 0x80000000
 
-const EOD_STATUS32   = 0x00fffffe
+const EOD_STATUS32 = 0x00fffffe
 
 abstract type InverterData end
 struct InverterDataRaw <: InverterData
@@ -19,7 +19,7 @@ struct InverterDataRaw <: InverterData
     data::Array{UInt8}
 end
 
-struct DataUnsigned32 <: InverterData 
+struct DataUnsigned32 <: InverterData
     register_id::UInt32
     connector::UInt8
     timestamp::DateTime
@@ -35,22 +35,22 @@ end
 
 function get_significant_values(::Type{UInt32}, values)
     num_values = length(values)
-    if(num_values == 2)
+    if (num_values == 2)
         values[2] == 0x00000000 && return [values[1]]
-    elseif(num_values == 5)
-        if(values[5] == 0x00000001)
+    elseif (num_values == 5)
+        if (values[5] == 0x00000001)
             values[1] == values[2] && values[2] == values[3] && values[3] == values[4] && return [values[1]]
             values[3] == values[4] && return values[1:3]
             return values[1:4]
         end
-    elseif(num_values == 8)
+    elseif (num_values == 8)
         values[1] == values[2] && values[3] == values[4] && values[5] == values[6] && values[7] == values[8]  && return values[1:2:end]
     end
 
     return num_values
 end
 
-struct DataStatus32 <: InverterData 
+struct DataStatus32 <: InverterData
     register_id::UInt32
     connector::UInt8
     timestamp::DateTime
@@ -65,7 +65,7 @@ struct DataStatus32 <: InverterData
         for (i, word) in enumerate(words)
             word == EOD_STATUS32 && break
             push!(values, word & 0x00ffffff)
-            if(word >> 24 == 0x01)
+            if (word >> 24 == 0x01)
                 selected = i
             end
         end
@@ -74,7 +74,7 @@ struct DataStatus32 <: InverterData
     end
 end
 
-struct DataString32 <: InverterData 
+struct DataString32 <: InverterData
     register_id::UInt32
     connector::UInt8
     timestamp::DateTime
@@ -83,17 +83,17 @@ struct DataString32 <: InverterData
     function DataString32(register_id, connector, timestamp, io, data_length)
         bytes = read(io, data_length)
         zero_pos = findfirst(==(0), bytes)
-        value = String(bytes[1:zero_pos-1])
+        value = String(bytes[1:(zero_pos - 1)])
 
         return new(register_id, connector, timestamp, value)
     end
 end
 
-struct DataFloat <: InverterData 
+struct DataFloat <: InverterData
 
 end
 
-struct DataSigned32 <: InverterData 
+struct DataSigned32 <: InverterData
     register_id::UInt32
     connector::UInt8
     timestamp::DateTime
@@ -109,15 +109,15 @@ end
 
 function get_significant_values(::Type{Int32}, values)
     num_values = length(values)
-    if(num_values == 2)
+    if (num_values == 2)
         values[2] == 0 && return [values[1]]
-    elseif(num_values == 5)
-        if(values[5] == 1)
+    elseif (num_values == 5)
+        if (values[5] == 1)
             values[1] == values[2] && values[2] == values[3] && values[3] == values[4] && return [values[1]]
             values[3] == values[4] && return values[1:3]
             return values[1:4]
         end
-    elseif(num_values == 8)
+    elseif (num_values == 8)
         values[1] == values[2] && values[3] == values[4] && values[5] == values[6] && values[7] == values[8]  && return values[1:2:end]
     end
 
@@ -134,18 +134,18 @@ function parse_data(io::IOBuffer, record_length::Int)
 
     timestamp = unix2datetime(word2)
 
-    if(data_type == DATA_UNSIGNED32)
+    if (data_type == DATA_UNSIGNED32)
         return DataUnsigned32(register_id, connector, timestamp, io, record_length - 8)
-    elseif(data_type == DATA_STATUS32)
+    elseif (data_type == DATA_STATUS32)
         return DataStatus32(register_id, connector, timestamp, io, record_length - 8)
-    elseif(data_type == DATA_STRING32)
+    elseif (data_type == DATA_STRING32)
         return DataString32(register_id, connector, timestamp, io, record_length - 8)
-    elseif(data_type == DATA_FLOAT)
+    elseif (data_type == DATA_FLOAT)
 
-    elseif(data_type == DATA_SIGNED32)
+    elseif (data_type == DATA_SIGNED32)
         return DataSigned32(register_id, connector, timestamp, io, record_length - 8)
     end
-    
+
     return InverterDataRaw(register_id, connector, data_type, word2, read(io, record_length - 8))
 end
 
@@ -164,7 +164,7 @@ function parse_data(response::InverterResponse)
 end
 
 function throw_if_error(response, source)
-    response.error_code != 0x0000 && error("[$source] Received error: $(error_string(response.error_code))")
+    return response.error_code != 0x0000 && error("[$source] Received error: $(error_string(response.error_code))")
 end
 
 function inverter_device_name(socket, target, destination, source)
@@ -272,7 +272,7 @@ function inverter_dc_voltage(socket, target, destination, source)
 
         conn = d.connector
         d.values[1] == NAN_SIGNED32 && continue
-        voltage[conn] = Int(d.values[1]) / 1e2
+        voltage[conn] = Int(d.values[1]) / 1.0e2
     end
 
     return voltage
@@ -291,7 +291,7 @@ function inverter_dc_current(socket, target, destination, source)
 
         conn = d.connector
         d.values[1] == NAN_SIGNED32 && continue
-        current[conn] = Int(d.values[1]) / 1e3
+        current[conn] = Int(d.values[1]) / 1.0e3
     end
 
     return current
@@ -331,7 +331,7 @@ function inverter_ac_voltage(socket, target, destination, source)
 
         line = lines[d.register_id]
         d.values[1] == NAN_UNSIGNED32 && continue
-        voltage[line] = d.values[1] / 1e2
+        voltage[line] = d.values[1] / 1.0e2
     end
 
     return voltage
@@ -351,7 +351,7 @@ function inverter_ac_current(socket, target, destination, source)
 
         line = lines[d.register_id]
         d.values[1] == NAN_SIGNED32 && continue
-        current[line] = d.values[1] / 1e3
+        current[line] = d.values[1] / 1.0e3
     end
 
     return current
@@ -367,7 +367,7 @@ function inverter_ac_frequency(socket, target, destination, source)
     length(data) != 1 && error("[inverter_ac_frequency] Unexpected data received: $data")
     typeof(data[1]) != DataUnsigned32 && error("[inverter_ac_frequency] Unexpected data received: $(data[1])")
 
-    return data[1].values[1] / 1e2
+    return data[1].values[1] / 1.0e2
 end
 
 function inverter_energy_total(socket, target, destination, source)
@@ -380,7 +380,7 @@ function inverter_energy_total(socket, target, destination, source)
     length(data) != 1 && error("[inverter_energy_total] Unexpected data received: $data")
     typeof(data[1]) != DataUnsigned32 && error("[inverter_energy_total] Unexpected data received: $(data[1])")
 
-    return data[1].values[1] / 1e3
+    return data[1].values[1] / 1.0e3
 end
 
 function inverter_energy_day(socket, target, destination, source)
@@ -393,7 +393,7 @@ function inverter_energy_day(socket, target, destination, source)
     length(data) != 1 && error("[inverter_energy_day] Unexpected data received: $data")
     typeof(data[1]) != DataUnsigned32 && error("[inverter_energy_day] Unexpected data received: $(data[1])")
 
-    return data[1].values[1] / 1e3
+    return data[1].values[1] / 1.0e3
 end
 
 function inverter_status_operation(socket, target, destination, source)

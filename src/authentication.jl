@@ -35,7 +35,7 @@ function login(socket::UDPSocket, host, user::UserGroup, password::String; sourc
     cmd = InverterCommand(destination, source, get_packet_id(), CMD_LOGIN, user_code(user), 0x00000384, take!(data))
     response = query(socket, host, cmd)
 
-    if(response.error_code != 0)
+    if (response.error_code != 0)
         error("Login error: $(error_string(response.error_code))")
     end
 
@@ -51,6 +51,6 @@ function logout(socket::UDPSocket, host; source_id = 0x007d, source_serial = 0x0
     send(socket, host, SW_PORT, condense(cmd))
 
     println("Logged out.")
-    
+
     return # No response from the device
 end

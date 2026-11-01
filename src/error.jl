@@ -5,7 +5,7 @@ const ERROR_CODES = Dict(
 )
 
 function error_string(error::UInt16)
-    if(error in keys(ERROR_CODES))
+    if (error in keys(ERROR_CODES))
         return ERROR_CODES[error]
     else
         return "0x" * string(error, base = 16, pad = 4)
