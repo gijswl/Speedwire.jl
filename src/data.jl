@@ -167,9 +167,17 @@ function throw_if_error(response, source)
     return response.error_code != 0x0000 && error("[$source] Received error: $(error_string(response.error_code))")
 end
 
-function inverter_device_name(socket, target, destination, source)
-    cmd = InverterCommand(destination, source, get_packet_id(), CMD_QUERY_DEVICE, 0x00821e00, 0x00821eff, [])
-    response = query(socket, target, cmd)
+function inverter_device_name(dev::Device)
+    cmd = InverterCommand(
+        dev.destination, 0x0000,
+        dev.source, 0x0000,
+        get_packet_id(),
+        CMD_QUERY_DEVICE,
+        0x00821e00,
+        0x00821eff,
+        []
+    )
+    response = query(dev.socket, dev.host, cmd)
 
     throw_if_error(response, "inverter_device_name")
 
@@ -180,9 +188,17 @@ function inverter_device_name(socket, target, destination, source)
     return data[1].value
 end
 
-function inverter_device_class(socket, target, destination, source)
-    cmd = InverterCommand(destination, source, get_packet_id(), CMD_QUERY_DEVICE, 0x00821f00, 0x00821fff, [])
-    response = query(socket, target, cmd)
+function inverter_device_class(dev::Device)
+    cmd = InverterCommand(
+        dev.destination, 0x0000,
+        dev.source, 0x0000,
+        get_packet_id(),
+        CMD_QUERY_DEVICE,
+        0x00821f00,
+        0x00821fff,
+        []
+    )
+    response = query(dev.socket, dev.host, cmd)
 
     throw_if_error(response, "inverter_device_class")
 
@@ -195,9 +211,17 @@ function inverter_device_class(socket, target, destination, source)
     return selected_status
 end
 
-function inverter_device_type(socket, target, destination, source)
-    cmd = InverterCommand(destination, source, get_packet_id(), CMD_QUERY_DEVICE, 0x00822000, 0x008220ff, [])
-    response = query(socket, target, cmd)
+function inverter_device_type(dev::Device)
+    cmd = InverterCommand(
+        dev.destination, 0x0000,
+        dev.source, 0x0000,
+        get_packet_id(),
+        CMD_QUERY_DEVICE,
+        0x00822000,
+        0x008220ff,
+        []
+    )
+    response = query(dev.socket, dev.host, cmd)
 
     throw_if_error(response, "inverter_device_type")
 
@@ -218,9 +242,17 @@ function bcd_to_string(b::UInt8)
     return String(bytes)
 end
 
-function inverter_software_revision(socket, target, destination, source)
-    cmd = InverterCommand(destination, source, get_packet_id(), CMD_QUERY_DEVICE, 0x00823400, 0x008234ff, [])
-    response = query(socket, target, cmd)
+function inverter_software_revision(dev::Device)
+    cmd = InverterCommand(
+        dev.destination, 0x0000,
+        dev.source, 0x0000,
+        get_packet_id(),
+        CMD_QUERY_DEVICE,
+        0x00823400,
+        0x008234ff,
+        []
+    )
+    response = query(dev.socket, dev.host, cmd)
 
     throw_if_error(response, "inverter_software_revision")
 
@@ -240,9 +272,17 @@ function inverter_software_revision(socket, target, destination, source)
     return str
 end
 
-function inverter_dc_power(socket, target, destination, source)
-    cmd = InverterCommand(destination, source, get_packet_id(), CMD_QUERY_DC, 0x00251e00, 0x00251eff, [])
-    response = query(socket, target, cmd)
+function inverter_dc_power(dev::Device)
+    cmd = InverterCommand(
+        dev.destination, 0x0000,
+        dev.source, 0x0000,
+        get_packet_id(),
+        CMD_QUERY_DC,
+        0x00251e00,
+        0x00251eff,
+        []
+    )
+    response = query(dev.socket, dev.host, cmd)
 
     throw_if_error(response, "inverter_dc_power")
 
@@ -259,9 +299,17 @@ function inverter_dc_power(socket, target, destination, source)
     return power
 end
 
-function inverter_dc_voltage(socket, target, destination, source)
-    cmd = InverterCommand(destination, source, get_packet_id(), CMD_QUERY_DC, 0x00451f00, 0x00451fff, [])
-    response = query(socket, target, cmd)
+function inverter_dc_voltage(dev::Device)
+    cmd = InverterCommand(
+        dev.destination, 0x0000,
+        dev.source, 0x0000,
+        get_packet_id(),
+        CMD_QUERY_DC,
+        0x00451f00,
+        0x00451fff,
+        []
+    )
+    response = query(dev.socket, dev.host, cmd)
 
     throw_if_error(response, "inverter_dc_voltage")
 
@@ -278,9 +326,17 @@ function inverter_dc_voltage(socket, target, destination, source)
     return voltage
 end
 
-function inverter_dc_current(socket, target, destination, source)
-    cmd = InverterCommand(destination, source, get_packet_id(), CMD_QUERY_DC, 0x00452100, 0x004521ff, [])
-    response = query(socket, target, cmd)
+function inverter_dc_current(dev::Device)
+    cmd = InverterCommand(
+        dev.destination, 0x0000,
+        dev.source, 0x0000,
+        get_packet_id(),
+        CMD_QUERY_DC,
+        0x00452100,
+        0x004521ff,
+        []
+    )
+    response = query(dev.socket, dev.host, cmd)
 
     throw_if_error(response, "inverter_dc_current")
 
@@ -297,9 +353,17 @@ function inverter_dc_current(socket, target, destination, source)
     return current
 end
 
-function inverter_ac_power(socket, target, destination, source)
-    cmd = InverterCommand(destination, source, get_packet_id(), CMD_QUERY_AC, 0x00464000, 0x004642ff, [])
-    response = query(socket, target, cmd)
+function inverter_ac_power(dev::Device)
+    cmd = InverterCommand(
+        dev.destination, 0x0000,
+        dev.source, 0x0000,
+        get_packet_id(),
+        CMD_QUERY_AC,
+        0x00464000,
+        0x004642ff,
+        []
+    )
+    response = query(dev.socket, dev.host, cmd)
 
     throw_if_error(response, "inverter_ac_power")
 
@@ -317,9 +381,17 @@ function inverter_ac_power(socket, target, destination, source)
     return power
 end
 
-function inverter_ac_voltage(socket, target, destination, source)
-    cmd = InverterCommand(destination, source, get_packet_id(), CMD_QUERY_AC, 0x00464800, 0x00464aff, [])
-    response = query(socket, target, cmd)
+function inverter_ac_voltage(dev::Device)
+    cmd = InverterCommand(
+        dev.destination, 0x0000,
+        dev.source, 0x0000,
+        get_packet_id(),
+        CMD_QUERY_AC,
+        0x00464800,
+        0x00464aff,
+        []
+    )
+    response = query(dev.socket, dev.host, cmd)
 
     throw_if_error(response, "inverter_ac_voltage")
 
@@ -337,9 +409,17 @@ function inverter_ac_voltage(socket, target, destination, source)
     return voltage
 end
 
-function inverter_ac_current(socket, target, destination, source)
-    cmd = InverterCommand(destination, source, get_packet_id(), CMD_QUERY_AC, 0x00465300, 0x004655ff, [])
-    response = query(socket, target, cmd)
+function inverter_ac_current(dev::Device)
+    cmd = InverterCommand(
+        dev.destination, 0x0000,
+        dev.source, 0x0000,
+        get_packet_id(),
+        CMD_QUERY_AC,
+        0x00465300,
+        0x004655ff,
+        []
+    )
+    response = query(dev.socket, dev.host, cmd)
 
     throw_if_error(response, "inverter_ac_current")
 
@@ -357,9 +437,17 @@ function inverter_ac_current(socket, target, destination, source)
     return current
 end
 
-function inverter_ac_frequency(socket, target, destination, source)
-    cmd = InverterCommand(destination, source, get_packet_id(), CMD_QUERY_AC, 0x00465700, 0x004657ff, [])
-    response = query(socket, target, cmd)
+function inverter_ac_frequency(dev::Device)
+    cmd = InverterCommand(
+        dev.destination, 0x0000,
+        dev.source, 0x0000,
+        get_packet_id(),
+        CMD_QUERY_AC,
+        0x00465700,
+        0x004657ff,
+        []
+    )
+    response = query(dev.socket, dev.host, cmd)
 
     throw_if_error(response, "inverter_ac_frequency")
 
@@ -370,9 +458,17 @@ function inverter_ac_frequency(socket, target, destination, source)
     return data[1].values[1] / 1.0e2
 end
 
-function inverter_energy_total(socket, target, destination, source)
-    cmd = InverterCommand(destination, source, get_packet_id(), CMD_QUERY_ENERGY, 0x00260100, 0x002601ff, [])
-    response = query(socket, target, cmd)
+function inverter_energy_total(dev::Device)
+    cmd = InverterCommand(
+        dev.destination, 0x0000,
+        dev.source, 0x0000,
+        get_packet_id(),
+        CMD_QUERY_ENERGY,
+        0x00260100,
+        0x002601ff,
+        []
+    )
+    response = query(dev.socket, dev.host, cmd)
 
     throw_if_error(response, "inverter_energy_total")
 
@@ -383,9 +479,17 @@ function inverter_energy_total(socket, target, destination, source)
     return data[1].values[1] / 1.0e3
 end
 
-function inverter_energy_day(socket, target, destination, source)
-    cmd = InverterCommand(destination, source, get_packet_id(), CMD_QUERY_ENERGY, 0x00262200, 0x002622ff, [])
-    response = query(socket, target, cmd)
+function inverter_energy_day(dev::Device)
+    cmd = InverterCommand(
+        dev.destination, 0x0000,
+        dev.source, 0x0000,
+        get_packet_id(),
+        CMD_QUERY_ENERGY,
+        0x00262200,
+        0x002622ff,
+        []
+    )
+    response = query(dev.socket, dev.host, cmd)
 
     throw_if_error(response, "inverter_energy_day")
 
@@ -396,9 +500,17 @@ function inverter_energy_day(socket, target, destination, source)
     return data[1].values[1] / 1.0e3
 end
 
-function inverter_status_operation(socket, target, destination, source)
-    cmd = InverterCommand(destination, source, get_packet_id(), CMD_QUERY_STATUS, 0x00214800, 0x002148ff, [])
-    response = query(socket, target, cmd)
+function inverter_status_operation(dev::Device)
+    cmd = InverterCommand(
+        dev.destination, 0x0000,
+        dev.source, 0x0000,
+        get_packet_id(),
+        CMD_QUERY_STATUS,
+        0x00214800,
+        0x002148ff,
+        []
+    )
+    response = query(dev.socket, dev.host, cmd)
 
     throw_if_error(response, "inverter_status_operation")
 
@@ -409,9 +521,17 @@ function inverter_status_operation(socket, target, destination, source)
     return data[1].values[data[1].selected]
 end
 
-function inverter_status_relay(socket, target, destination, source)
-    cmd = InverterCommand(destination, source, get_packet_id(), CMD_QUERY_STATUS, 0x00416400, 0x004164ff, [])
-    response = query(socket, target, cmd)
+function inverter_status_relay(dev::Device)
+    cmd = InverterCommand(
+        dev.destination, 0x0000,
+        dev.source, 0x0000,
+        get_packet_id(),
+        CMD_QUERY_STATUS,
+        0x00416400,
+        0x004164ff,
+        []
+    )
+    response = query(dev.socket, dev.host, cmd)
 
     throw_if_error(response, "inverter_status_relay")
 

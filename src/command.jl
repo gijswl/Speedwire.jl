@@ -15,7 +15,9 @@ const CMD_LOGOUT = 0xfffd01e0
 
 struct InverterCommand
     destination::Endpoint
+    destination_ctrl::UInt16
     source::Endpoint
+    source_ctrl::UInt16
     packet_id::UInt16
     command::UInt32
     argument1::UInt32
@@ -28,7 +30,9 @@ function condense(command::InverterCommand)
         0x6065,
         0xa0,
         command.destination,
+        command.destination_ctrl,
         command.source,
+        command.source_ctrl,
         0,
         0,
         command.packet_id,
@@ -48,7 +52,9 @@ end
 
 struct InverterResponse
     destination::Endpoint
+    destination_ctrl::UInt16
     source::Endpoint
+    source_ctrl::UInt16
     error_code::UInt16
     fragment_counter::UInt16
     packet_id::UInt16
@@ -64,7 +70,9 @@ function InverterResponse(bytes::Array{UInt8})
 
     return InverterResponse(
         data.destination,
+        data.destination_ctrl,
         data.source,
+        data.source_ctrl,
         data.error_code,
         data.fragment_counter,
         data.packet_id,

@@ -12,15 +12,15 @@ const ANY_SERIAL = 0xffffffff
 struct Endpoint
     SUSyID::UInt16
     serial::UInt32
-    control::UInt16
 end
+
+const ANY_ENDPOINT = Endpoint(ANY_SUSYID, ANY_SERIAL)
 
 function condense(endpoint::Endpoint)
     io = IOBuffer()
 
     write(io, endpoint.SUSyID)
     write(io, endpoint.serial)
-    write(io, endpoint.control)
 
     return take!(io)
 end
@@ -29,7 +29,6 @@ function parse_endpoint(io::IOBuffer)
     return Endpoint(
         read(io, UInt16),
         read(io, UInt32),
-        read(io, UInt16)
     )
 end
 
@@ -96,7 +95,9 @@ struct TagData2 <: Tag
     protocol::UInt16
     control::UInt8
     destination::Endpoint
+    destination_ctrl::UInt16
     source::Endpoint
+    source_ctrl::UInt16
     error_code::UInt16
     fragment_counter::UInt16
     packet_id::UInt16
@@ -117,7 +118,9 @@ function tag_data(tag::TagData2)
     write(io, length_words)
     write(io, tag.control)
     write(io, condense(tag.destination))
+    write(io, tag.destination_ctrl)
     write(io, condense(tag.source))
+    write(io, tag.source_ctrl)
     write(io, tag.error_code)
     write(io, tag.fragment_counter)
     write(io, tag.packet_id | 0x8000)
@@ -135,7 +138,9 @@ function parse_tag(::Type{TagData2}, io::IOBuffer)
     length_words = read(io, UInt8)
     control = read(io, UInt8)
     destination = parse_endpoint(io)
+    destination_ctrl = read(io, UInt16)
     source = parse_endpoint(io)
+    source_ctrl = read(io, UInt16)
     error_code = read(io, UInt16)
     fragment_counter = read(io, UInt16)
     packet_id = read(io, UInt16)
@@ -146,7 +151,7 @@ function parse_tag(::Type{TagData2}, io::IOBuffer)
     data_length = length_words * 4 - 36
     data = read(io, data_length)
 
-    return TagData2(protocol, control, destination, source, error_code, fragment_counter, packet_id, command, first_register, last_register, data)
+    return TagData2(protocol, control, destination, destination_ctrl, source, source_ctrl, error_code, fragment_counter, packet_id, command, first_register, last_register, data)
 end
 
 
